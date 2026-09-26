@@ -5,24 +5,35 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Jaalibatul Marāqib</title>
 <style>
-:root{--green:#0f5132;--green2:#198754;--bg:#f5f7f6;--card:#fff;--text:#18221d;--muted:#6b756f;--border:#dce4df}
+:root{--green:#0f5132;--green2:#198754;--bg:#f5f7f6;--card:#fff;--text:#18221d;--muted:#6b756f;--border:#dce4df;--warn:#8a5a00}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{background:var(--green);color:#fff;padding:24px 18px 22px;border-radius:0 0 22px 22px}
+header{background:var(--green);color:#fff;padding:calc(24px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 22px 22px}
 h1{font-size:23px;margin:0 0 5px}header p{margin:0;opacity:.9;font-size:14px}
-main{max-width:720px;margin:auto;padding:16px 14px 40px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #00000008}
+main{max-width:720px;margin:auto;padding:16px 14px calc(40px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #00000008}
 label{font-weight:700;font-size:14px;display:block;margin-bottom:8px}.hint{font-size:12px;color:var(--muted);margin:7px 0 0}
-input,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:13px;font:inherit;background:#fff}
+.warn{font-size:12px;color:var(--warn);margin:7px 0 0}
+input,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:13px;font:inherit;background:#fff;color:inherit}
 input:focus,textarea:focus{outline:2px solid #b7ddca;border-color:var(--green2)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.stat{background:#f0f6f2;border-radius:13px;padding:13px;text-align:center}.stat b{display:block;font-size:23px;color:var(--green)}.stat span{font-size:12px;color:var(--muted)}
-button{border:0;border-radius:12px;padding:13px 15px;font-weight:700;font-size:15px;cursor:pointer}.primary{background:var(--green);color:#fff;width:100%;margin-top:12px}.secondary{background:#e9f1ed;color:var(--green);flex:1}.danger{background:#fff0f0;color:#a12b2b}
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+.primary{background:var(--green);color:#fff;width:100%;margin-top:12px}.secondary{background:#e9f1ed;color:var(--green)}.danger{background:#fff0f0;color:#a12b2b}
+.small{padding:9px 12px;font-size:14px}
 .row{display:flex;gap:8px;margin-top:10px}.row button{flex:1}
+.datebar{display:grid;grid-template-columns:48px 1fr 48px;gap:6px}
 .preview{white-space:pre-wrap;background:#f7f8f7;border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;line-height:1.55;max-height:440px;overflow:auto}
-.person{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf0ee}.person:last-child{border-bottom:0}.person input{width:22px;height:22px;padding:0}.person .n{width:28px;color:var(--muted);font-size:13px}.person .name{flex:1;font-size:14px}.person .count{font-weight:700;color:var(--green)}
+.person{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf0ee}.person:last-child{border-bottom:0}.person .n{width:28px;color:var(--muted);font-size:13px}.person .name{flex:1;font-size:14px}.person .count{font-weight:700;color:var(--green)}
+.mrow{display:grid;grid-template-columns:28px 1fr 64px 40px;gap:6px;margin:6px 0;align-items:center}.mrow span{color:var(--muted);font-size:13px}.mrow button{padding:10px 0}
 small{color:var(--muted)}details summary{cursor:pointer;font-weight:700}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
-@media(prefers-color-scheme:dark){body{background:#101512;color:#eef5f1}.card,input,textarea{background:#171d19;color:#eef5f1;border-color:#303a34}.preview{background:#121815;border-color:#303a34}.stat{background:#17241c}.hint,small,.person .n,.footer{color:#9eaaa3}}
+h3{font-size:14px;margin:18px 0 6px}
+@media(prefers-color-scheme:dark){body{background:#101512;color:#eef5f1}.card,input,textarea{background:#171d19;color:#eef5f1;border-color:#303a34}.preview{background:#121815;border-color:#303a34}.stat{background:#17241c}.secondary{background:#1e2c24;color:#9fdcbc}.danger{background:#2a1717;color:#f0a0a0}.person{border-color:#26302a}.hint,small,.person .n,.footer,.mrow span{color:#9eaaa3}.warn{color:#e0b050}}
 </style>
 </head>
 <body>
@@ -33,22 +44,32 @@ small{color:var(--muted)}details summary{cursor:pointer;font-weight:700}.footer{
 <main>
 <section class="card">
   <label for="date">📅 Date du vendredi</label>
-  <input id="date" type="date">
+  <div class="datebar">
+    <button class="secondary small" id="prevWeek" aria-label="Vendredi précédent">‹</button>
+    <input id="date" type="date">
+    <button class="secondary small" id="nextWeek" aria-label="Vendredi suivant">›</button>
+  </div>
+  <p class="hint" id="dateHint"></p>
 
   <label style="margin-top:14px">🗓️ Date islamique</label>
-  <div style="display:grid;grid-template-columns:90px 1fr 90px;gap:7px">
-    <input id="hijriDay" type="number" min="1" max="30" placeholder="13">
-    <input id="hijriMonth" type="text" placeholder="Rakki Gamou">
-    <input id="hijriYear" type="number" min="1" placeholder="1447">
+  <div style="display:grid;grid-template-columns:80px 1fr 90px;gap:7px">
+    <input id="hijriDay" type="number" min="1" max="30" inputmode="numeric">
+    <input id="hijriMonth" type="text" list="months">
+    <input id="hijriYear" type="number" min="1" inputmode="numeric">
   </div>
-  <p class="hint">Exemple : <b>13 / Rakki Gamou / 1447</b> → « Àjjuma 13 Rakki Gamou 1447h ».</p>
+  <datalist id="months"></datalist>
+  <p class="hint">Calculée automatiquement à partir de la date. Tu peux la corriger à la main (ou régler le décalage dans ⚙️ si elle est souvent décalée d'un jour).</p>
 </section>
 
 <section class="card">
   <label for="selection">🔢 Numéros à sélectionner</label>
-  <input id="selection" type="text" placeholder="Ex. 1-10, 15, 22-25, 30" autocomplete="off">
-  <p class="hint">Tu peux utiliser des numéros seuls, des plages ou mélanger les deux.</p>
-  <button class="primary" id="generate">Générer la sélection</button>
+  <input id="selection" type="text" placeholder="Ex. 1-10, 15, 22-25, 30" autocomplete="off" inputmode="numeric">
+  <p class="hint">Numéros seuls, plages, ou les deux mélangés.</p>
+  <p class="warn" id="selWarn" hidden></p>
+  <div class="row">
+    <button class="secondary small" id="selAll">Tout sélectionner</button>
+    <button class="secondary small" id="selClear">Effacer</button>
+  </div>
   <div class="stats">
     <div class="stat"><b id="nbPeople">0</b><span>participants</span></div>
     <div class="stat"><b id="nbReads">0</b><span>lectures</span></div>
@@ -74,73 +95,150 @@ small{color:var(--muted)}details summary{cursor:pointer;font-weight:700}.footer{
 <section class="card">
   <label>📖 Message de fin de lecture</label>
   <div id="completionPreview" class="preview"></div>
-  <button class="primary" id="copyCompletion">📋 Copier le message de fin</button>
+  <div class="row">
+    <button class="secondary" id="copyCompletion">📋 Copier</button>
+    <button class="secondary" id="shareCompletion">↗️ Partager</button>
+  </div>
 </section>
 
 <section class="card">
   <details>
     <summary>⚙️ Gestion des participants</summary>
-    <p class="hint">La liste est enregistrée uniquement sur cet appareil. Tu peux modifier un nom ou son nombre de lectures.</p>
+    <p class="hint">Enregistré automatiquement, uniquement sur cet appareil. Attention : supprimer une personne décale les numéros de celles qui suivent.</p>
     <div id="manageList"></div>
+    <button class="primary" id="addPerson">➕ Ajouter un participant</button>
+
+    <h3>Sauvegarde</h3>
+    <p class="hint">Exporte la liste pour la garder en sécurité ou la transférer sur un autre téléphone.</p>
     <div class="row">
-      <button class="secondary" id="savePeople">Enregistrer</button>
-      <button class="danger" id="resetPeople">Réinitialiser</button>
+      <button class="secondary small" id="exportBtn">⬇️ Exporter</button>
+      <button class="secondary small" id="importBtn">⬆️ Importer</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+
+    <h3>Décalage de la date islamique</h3>
+    <div style="display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center">
+      <input id="hijriOffset" type="number" min="-2" max="2" step="1">
+      <small>jour(s) ajouté(s) au calcul (ex. -1 si le calendrier local a un jour de retard)</small>
+    </div>
+
+    <div class="row" style="margin-top:18px">
+      <button class="danger small" id="resetPeople">Réinitialiser la liste</button>
     </div>
   </details>
 </section>
 
-<p class="footer">V1 • Les données restent sur ton appareil</p>
+<p class="footer">V2 • Les données restent sur ton appareil</p>
 </main>
 <script>
 const DEFAULT_PEOPLE = [{"name": "Serigne Abdou Samad Mbacké Ibn Serigne Sonhibou", "count": 1}, {"name": "S Doudou Gueye", "count": 3}, {"name": "S Moussa Camara", "count": 1}, {"name": "Diabel Ba", "count": 7}, {"name": "S Modou Kara Fall", "count": 2}, {"name": "S Cheikh Dieng", "count": 94}, {"name": "S Moussa Gning", "count": 3}, {"name": "S Fallou Mbacké", "count": 10}, {"name": "S Moustapha Lo", "count": 28}, {"name": "S Abdoulahi Diallo", "count": 7}, {"name": "S Ahmadou Moctar", "count": 2}, {"name": "S Moyhamed Niang", "count": 1}, {"name": "S Ousmane Gueye", "count": 1}, {"name": "S Moustapha Fall", "count": 3}, {"name": "S Doudou Thiam", "count": 3}, {"name": "S Mor Dieng", "count": 3}, {"name": "Baye Medoune Sarr", "count": 14}, {"name": "Baye Tomb Déll", "count": 1}, {"name": "Sokhna Mai Sylla", "count": 7}, {"name": "S Oumar Barro", "count": 1}, {"name": "S Ibrahima Faye", "count": 1}, {"name": "S Khadim Sarr", "count": 7}, {"name": "S Abdou Karim Ndiaye", "count": 1}, {"name": "S Cheikh Dame Seck", "count": 22}, {"name": "S Alioune Badara Sene", "count": 5}, {"name": "S Cheikh Gueye", "count": 3}, {"name": "S Mor Ndiaye", "count": 1}, {"name": "S Saliou Lo", "count": 2}, {"name": "S Omar Amar", "count": 2}, {"name": "Nuuru Wade", "count": 2}, {"name": "S Aliou Thiam", "count": 2}, {"name": "S Moustapha Sanosi", "count": 3}, {"name": "S Same Diop", "count": 2}, {"name": "S Dame Diop", "count": 7}, {"name": "S Ahmadoul Seck", "count": 3}, {"name": "Lamine Ndiour", "count": 4}, {"name": "Lamine Diop", "count": 7}, {"name": "S Maguette Fall", "count": 1}, {"name": "Serigne Diayante Diouf", "count": 7}, {"name": "Sokhna Oumou Sow", "count": 2}, {"name": "S Ndiaga Dieng", "count": 7}, {"name": "S Mourad Kebe", "count": 18}, {"name": "S Mouhamed Seck", "count": 2}, {"name": "Sokhna Amy Toure", "count": 2}, {"name": "S Abdou Diaw", "count": 5}, {"name": "S Aliou Gueye", "count": 1}, {"name": "S Moustapha Dienne", "count": 2}, {"name": "S Yalla Ndiaye", "count": 3}, {"name": "Ngagne Niang", "count": 3}, {"name": "S Abdoulaye Ndiaye", "count": 1}, {"name": "S Saliou Samb", "count": 1}, {"name": "S Habib Diouf", "count": 3}, {"name": "S Souhaibu Ngom", "count": 7}];
-let people = JSON.parse(localStorage.getItem('jaalibat_people') || 'null') || DEFAULT_PEOPLE;
-const $ = id => document.getElementById(id);
+// Noms wolof des mois hégiriens (1 = Muharram … 12 = Dhul-Hijja) — modifiables ici
+const WOLOF_MONTHS = ['Tamxarit','Diggi Gamou','Gamou','Rakki Gamou','Rakkaati Gamou','Maamu Kor','Ndeyu Kor','Baraxlu','Kor','Koori','Diggi Tabaski','Tabaski'];
 
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch{} },
+  del(k){ try{ localStorage.removeItem(k); }catch{} }
+};
+const clone = x => JSON.parse(JSON.stringify(x));
+let people;
+try{ people = JSON.parse(store.get('jaalibat_people', 'null')) || clone(DEFAULT_PEOPLE); }catch{ people = clone(DEFAULT_PEOPLE); }
+
+/* ---------- Dates ---------- */
+const pad = n => String(n).padStart(2,'0');
+const toISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fromISO = s => new Date(s + 'T12:00:00');
+function upcomingFriday(){
+  const d = new Date(); d.setHours(12,0,0,0);
+  d.setDate(d.getDate() + (5 - d.getDay() + 7) % 7); // aujourd'hui si vendredi
+  return toISO(d);
+}
+function shiftDays(iso, n){ const d = fromISO(iso); d.setDate(d.getDate()+n); return toISO(d); }
 function formatDate(value){
   if(!value) return 'Vendredi';
-  const d = new Date(value+'T12:00:00');
-  return new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
+  const s = new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(fromISO(value));
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
+function computeHijri(iso){
+  try{
+    const offset = parseInt(store.get('jaalibat_hijri_offset','0')) || 0;
+    const d = fromISO(shiftDays(iso, offset));
+    const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'}).formatToParts(d);
+    const get = t => parseInt((parts.find(p => p.type === t) || {}).value);
+    const day = get('day'), month = get('month'), year = get('year');
+    if(!day || !month || !year) return null;
+    return { day, month: WOLOF_MONTHS[month-1] || '', year };
+  }catch{ return null; }
+}
+function fillHijri(){
+  const h = computeHijri($('date').value);
+  if(h){ $('hijriDay').value = h.day; $('hijriMonth').value = h.month; $('hijriYear').value = h.year; }
+}
+function updateDateHint(){
+  const v = $('date').value;
+  if(!v){ $('dateHint').textContent = ''; return; }
+  const isFri = fromISO(v).getDay() === 5;
+  $('dateHint').textContent = isFri ? '' : '⚠️ Cette date n’est pas un vendredi.';
+}
+function setDate(iso){ $('date').value = iso; fillHijri(); updateDateHint(); render(); }
+
+/* ---------- Sélection ---------- */
 function parseSelection(s){
-  const set = new Set();
-  s.split(',').map(x=>x.trim()).filter(Boolean).forEach(part=>{
-    const m=part.match(/^(\d+)\s*-\s*(\d+)$/);
+  const set = new Set(), bad = [];
+  s.split(/[,;]/).map(x => x.trim()).filter(Boolean).forEach(part => {
+    const m = part.match(/^(\d+)\s*-\s*(\d+)$/);
     if(m){
-      let a=+m[1], b=+m[2]; if(a>b)[a,b]=[b,a];
-      for(let i=a;i<=b;i++) set.add(i);
+      let a = +m[1], b = +m[2]; if(a > b) [a,b] = [b,a];
+      for(let i = a; i <= b; i++) set.add(i);
     } else if(/^\d+$/.test(part)) set.add(+part);
+    else bad.push(part);
   });
-  return [...set].filter(n=>n>=1&&n<=people.length).sort((a,b)=>a-b);
+  const all = [...set].sort((a,b) => a-b);
+  const out = all.filter(n => n < 1 || n > people.length);
+  return { nums: all.filter(n => n >= 1 && n <= people.length), bad, out };
 }
 function selected(){
-  return parseSelection($('selection').value).map(n=>({n,...people[n-1]}));
+  const r = parseSelection($('selection').value);
+  return { ...r, list: r.nums.map(n => ({ n, ...people[n-1] })) };
 }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 function render(){
-  const arr=selected(), reads=arr.reduce((s,p)=>s+Number(p.count||0),0);
-  $('nbPeople').textContent=arr.length;
-  $('nbReads').textContent=reads;
-  $('peopleList').innerHTML=arr.map(p=>`<div class="person"><span class="n">${p.n}.</span><span class="name">${esc(p.name)}</span><span class="count">${p.count}</span></div>`).join('') || '<small>Aucune personne sélectionnée.</small>';
-  const lines=arr.map(p=>`${p.n}. ${p.name} — ${p.count}`);
-  const hDay = $('hijriDay').value.trim();
-  const hMonth = $('hijriMonth').value.trim();
-  const hYear = $('hijriYear').value.trim();
-  const wolofDate = (hDay && hMonth && hYear)
-    ? `Àjjuma ${hDay} ${hMonth} ${hYear}h`
-    : 'Àjjuma';
-  $('preview').textContent=`🕌 *BISMILLAH, BARKEP BOROM TOUBA*
+  const { list: arr, bad, out } = selected();
+  const reads = arr.reduce((s,p) => s + Number(p.count || 0), 0);
+  $('nbPeople').textContent = arr.length;
+  $('nbReads').textContent = reads;
+
+  const warns = [];
+  if(out.length) warns.push(`Numéro(s) inexistant(s) ignoré(s) : ${out.join(', ')} (la liste compte ${people.length} personnes).`);
+  if(bad.length) warns.push(`Non compris : ${bad.join(', ')}`);
+  $('selWarn').hidden = !warns.length;
+  $('selWarn').textContent = warns.join(' ');
+
+  $('peopleList').innerHTML = arr.map(p => `<div class="person"><span class="n">${p.n}.</span><span class="name">${esc(p.name)}</span><span class="count">${p.count}</span></div>`).join('') || '<small>Aucune personne sélectionnée.</small>';
+
+  const lines = arr.map(p => `${p.n}. ${p.name} — ${p.count}`);
+  const hDay = $('hijriDay').value.trim(), hMonth = $('hijriMonth').value.trim(), hYear = $('hijriYear').value.trim();
+  const wolofDate = (hDay && hMonth && hYear) ? `Àjjuma ${hDay} ${hMonth} ${hYear}h` : 'Àjjuma';
+  const dateTxt = formatDate($('date').value);
+
+  $('preview').textContent =
+`🕌 *BISMILLAH, BARKEP BOROM TOUBA*
 📖 *JAAYANTÉ Duruss JAALIBATUL MARĀQIB*
 Àjjuma ju jott - chaque vendredi
 
-🗓️ *${formatDate($('date').value)}*
+🗓️ *${dateTxt}*
 🗓️ *${wolofDate}*
 
-${lines.join('\\n')}
+${lines.join('\n')}
 
 📊 *TOTAL : ${reads} lectures*
 👥 *${arr.length} participants*`;
 
-  $('completionPreview').textContent=`📖 *JAAYANTÉ Duruss JAALIBATUL MARĀQIB*
-🗓️ *${formatDate($('date').value)}*
+  $('completionPreview').textContent =
+`📖 *JAAYANTÉ Duruss JAALIBATUL MARĀQIB*
+🗓️ *${dateTxt}*
 🗓️ *${wolofDate}*
 Liim bi tollu na ci: *${reads}*
 
@@ -148,37 +246,106 @@ Def nañ ko hadiya Borom Touba. Di ñaanal sëriñ Muntakha Mbacké mu yaagg fi 
 
 Jaangeenjëfëti🙏`;
 
-  localStorage.setItem('jaalibat_selection',$('selection').value);
-  localStorage.setItem('jaalibat_date',$('date').value);
-  localStorage.setItem('jaalibat_hijri_day',$('hijriDay').value);
-  localStorage.setItem('jaalibat_hijri_month',$('hijriMonth').value);
-  localStorage.setItem('jaalibat_hijri_year',$('hijriYear').value);
+  store.set('jaalibat_selection', $('selection').value);
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ---------- Copier / partager ---------- */
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try{ ok = document.execCommand('copy'); }catch{}
+    ta.remove(); return ok;
+  }
+}
+function flash(btn, msg){ const old = btn.textContent; btn.textContent = msg; setTimeout(() => btn.textContent = old, 1500); }
+async function shareText(text, btn){
+  if(navigator.share){
+    try{ await navigator.share({ text }); }
+    catch(e){ if(e.name !== 'AbortError') flash(btn, '⚠️ Échec du partage'); }
+  } else {
+    const ok = await copyText(text);
+    flash(btn, ok ? '✅ Copié (partage indisponible)' : '⚠️ Impossible');
+  }
+}
+$('copy').onclick = async () => flash($('copy'), await copyText($('preview').textContent) ? '✅ Copié !' : '⚠️ Échec');
+$('copyCompletion').onclick = async () => flash($('copyCompletion'), await copyText($('completionPreview').textContent) ? '✅ Copié !' : '⚠️ Échec');
+$('share').onclick = () => shareText($('preview').textContent, $('share'));
+$('shareCompletion').onclick = () => shareText($('completionPreview').textContent, $('shareCompletion'));
+
+/* ---------- Gestion des participants ---------- */
+function savePeople(){ store.set('jaalibat_people', JSON.stringify(people)); }
 function renderManage(){
-  $('manageList').innerHTML=people.map((p,i)=>`<div style="display:grid;grid-template-columns:32px 1fr 70px;gap:6px;margin:6px 0"><span style="padding:12px 0">${i+1}</span><input data-name="${i}" value="${esc(p.name)}"><input data-count="${i}" type="number" min="0" value="${p.count}"></div>`).join('');
+  $('manageList').innerHTML = people.map((p,i) => `<div class="mrow">
+    <span>${i+1}</span>
+    <input data-name="${i}" value="${esc(p.name)}" aria-label="Nom ${i+1}">
+    <input data-count="${i}" type="number" min="0" inputmode="numeric" value="${p.count}" aria-label="Lectures ${i+1}">
+    <button class="danger" data-del="${i}" aria-label="Supprimer ${esc(p.name)}">✕</button>
+  </div>`).join('') || '<small>Aucun participant.</small>';
 }
-function savePeople(){
-  document.querySelectorAll('[data-name]').forEach(el=>people[+el.dataset.name].name=el.value.trim());
-  document.querySelectorAll('[data-count]').forEach(el=>people[+el.dataset.count].count=Math.max(0,+el.value||0));
-  localStorage.setItem('jaalibat_people',JSON.stringify(people)); render(); alert('Liste enregistrée.');
-}
-$('generate').onclick=render;
-$('selection').addEventListener('input',render);
-$('date').addEventListener('change',render);
-$('copy').onclick=async()=>{await navigator.clipboard.writeText($('preview').textContent);$('copy').textContent='✅ Copié !';setTimeout(()=>$('copy').textContent='📋 Copier',1400)};
-$('copyCompletion').onclick=async()=>{await navigator.clipboard.writeText($('completionPreview').textContent);$('copyCompletion').textContent='✅ Message copié !';setTimeout(()=>$('copyCompletion').textContent='📋 Copier le message de fin',1600)};
-$('share').onclick=async()=>{if(navigator.share) await navigator.share({title:'Jaalibatul Marāqib',text:$('preview').textContent}); else alert('Le partage direct n’est pas disponible sur ce navigateur. Utilise « Copier ».')};
-$('savePeople').onclick=savePeople;
-$('resetPeople').onclick=()=>{if(confirm('Réinitialiser les 53 participants ?')){people=JSON.parse(JSON.stringify(DEFAULT_PEOPLE));localStorage.removeItem('jaalibat_people');renderManage();render();}};
-$('date').value=localStorage.getItem('jaalibat_date') || new Date().toISOString().slice(0,10);
-$('hijriDay').value=localStorage.getItem('jaalibat_hijri_day') || '';
-$('hijriMonth').value=localStorage.getItem('jaalibat_hijri_month') || 'Rakki Gamou';
-$('hijriYear').value=localStorage.getItem('jaalibat_hijri_year') || '';
-$('selection').value=localStorage.getItem('jaalibat_selection') || '';
-$('hijriDay').addEventListener('input',render);
-$('hijriMonth').addEventListener('input',render);
-$('hijriYear').addEventListener('input',render);
-renderManage();render();
+$('manageList').addEventListener('input', e => {
+  const t = e.target;
+  if(t.dataset.name !== undefined) people[+t.dataset.name].name = t.value;
+  else if(t.dataset.count !== undefined) people[+t.dataset.count].count = Math.max(0, parseInt(t.value) || 0);
+  else return;
+  savePeople(); render();
+});
+$('manageList').addEventListener('click', e => {
+  const i = e.target.dataset.del; if(i === undefined) return;
+  const p = people[+i];
+  if(!confirm(`Supprimer « ${p.name} » (n° ${+i+1}) ?\nLes numéros suivants seront décalés d’un rang.`)) return;
+  people.splice(+i, 1); savePeople(); renderManage(); render();
+});
+$('addPerson').onclick = () => {
+  people.push({ name: 'Nouveau participant', count: 1 });
+  savePeople(); renderManage(); render();
+  const inp = document.querySelector(`[data-name="${people.length-1}"]`);
+  inp.focus(); inp.select();
+};
+$('resetPeople').onclick = () => {
+  if(!confirm(`Revenir à la liste d’origine (${DEFAULT_PEOPLE.length} participants) ? Tes modifications seront perdues.`)) return;
+  people = clone(DEFAULT_PEOPLE); store.del('jaalibat_people'); renderManage(); render();
+};
+$('exportBtn').onclick = async () => {
+  const json = JSON.stringify(people, null, 1);
+  const file = new File([json], `jaalibat-participants-${toISO(new Date())}.json`, { type: 'application/json' });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    try{ await navigator.share({ files: [file], title: 'Sauvegarde Jaalibatul' }); return; }catch(e){ if(e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+$('importBtn').onclick = () => $('importFile').click();
+$('importFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if(!f) return;
+  try{
+    const data = JSON.parse(await f.text());
+    if(!Array.isArray(data) || !data.every(p => p && typeof p.name === 'string')) throw 0;
+    if(!confirm(`Remplacer la liste actuelle par ${data.length} participants ?`)) return;
+    people = data.map(p => ({ name: p.name.trim(), count: Math.max(0, parseInt(p.count) || 0) }));
+    savePeople(); renderManage(); render(); alert('Liste importée.');
+  }catch{ alert('Fichier invalide : ce n’est pas une sauvegarde Jaalibatul.'); }
+};
+$('hijriOffset').value = store.get('jaalibat_hijri_offset', '0');
+$('hijriOffset').addEventListener('input', () => { store.set('jaalibat_hijri_offset', $('hijriOffset').value || '0'); fillHijri(); render(); });
+
+/* ---------- Événements ---------- */
+$('date').addEventListener('change', () => { fillHijri(); updateDateHint(); render(); });
+$('prevWeek').onclick = () => setDate(shiftDays($('date').value || upcomingFriday(), -7));
+$('nextWeek').onclick = () => setDate(shiftDays($('date').value || upcomingFriday(), 7));
+['selection','hijriDay','hijriMonth','hijriYear'].forEach(id => $(id).addEventListener('input', render));
+$('selAll').onclick = () => { $('selection').value = people.length ? `1-${people.length}` : ''; render(); };
+$('selClear').onclick = () => { $('selection').value = ''; render(); $('selection').focus(); };
+
+/* ---------- Démarrage ---------- */
+$('months').innerHTML = WOLOF_MONTHS.map(m => `<option value="${esc(m)}">`).join('');
+$('selection').value = store.get('jaalibat_selection', '');
+setDate(upcomingFriday()); // toujours le vendredi en cours à l'ouverture
+renderManage();
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(() => {}); }
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script></body></html>
+</body>
+</html>
