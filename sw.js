@@ -1,5 +1,5 @@
 // Change ce numéro à chaque mise en ligne d'une nouvelle version
-const CACHE = 'jaalibat-v2';
+const CACHE = 'jaalibat-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

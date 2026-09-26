@@ -128,7 +128,7 @@ h3{font-size:14px;margin:18px 0 6px}
   </details>
 </section>
 
-<p class="footer">V2 • Les données restent sur ton appareil</p>
+<p class="footer">V2.1 • Les données restent sur ton appareil</p>
 </main>
 <script>
 const DEFAULT_PEOPLE = [{"name": "Serigne Abdou Samad Mbacké Ibn Serigne Sonhibou", "count": 1}, {"name": "S Doudou Gueye", "count": 3}, {"name": "S Moussa Camara", "count": 1}, {"name": "Diabel Ba", "count": 7}, {"name": "S Modou Kara Fall", "count": 2}, {"name": "S Cheikh Dieng", "count": 94}, {"name": "S Moussa Gning", "count": 3}, {"name": "S Fallou Mbacké", "count": 10}, {"name": "S Moustapha Lo", "count": 28}, {"name": "S Abdoulahi Diallo", "count": 7}, {"name": "S Ahmadou Moctar", "count": 2}, {"name": "S Moyhamed Niang", "count": 1}, {"name": "S Ousmane Gueye", "count": 1}, {"name": "S Moustapha Fall", "count": 3}, {"name": "S Doudou Thiam", "count": 3}, {"name": "S Mor Dieng", "count": 3}, {"name": "Baye Medoune Sarr", "count": 14}, {"name": "Baye Tomb Déll", "count": 1}, {"name": "Sokhna Mai Sylla", "count": 7}, {"name": "S Oumar Barro", "count": 1}, {"name": "S Ibrahima Faye", "count": 1}, {"name": "S Khadim Sarr", "count": 7}, {"name": "S Abdou Karim Ndiaye", "count": 1}, {"name": "S Cheikh Dame Seck", "count": 22}, {"name": "S Alioune Badara Sene", "count": 5}, {"name": "S Cheikh Gueye", "count": 3}, {"name": "S Mor Ndiaye", "count": 1}, {"name": "S Saliou Lo", "count": 2}, {"name": "S Omar Amar", "count": 2}, {"name": "Nuuru Wade", "count": 2}, {"name": "S Aliou Thiam", "count": 2}, {"name": "S Moustapha Sanosi", "count": 3}, {"name": "S Same Diop", "count": 2}, {"name": "S Dame Diop", "count": 7}, {"name": "S Ahmadoul Seck", "count": 3}, {"name": "Lamine Ndiour", "count": 4}, {"name": "Lamine Diop", "count": 7}, {"name": "S Maguette Fall", "count": 1}, {"name": "Serigne Diayante Diouf", "count": 7}, {"name": "Sokhna Oumou Sow", "count": 2}, {"name": "S Ndiaga Dieng", "count": 7}, {"name": "S Mourad Kebe", "count": 18}, {"name": "S Mouhamed Seck", "count": 2}, {"name": "Sokhna Amy Toure", "count": 2}, {"name": "S Abdou Diaw", "count": 5}, {"name": "S Aliou Gueye", "count": 1}, {"name": "S Moustapha Dienne", "count": 2}, {"name": "S Yalla Ndiaye", "count": 3}, {"name": "Ngagne Niang", "count": 3}, {"name": "S Abdoulaye Ndiaye", "count": 1}, {"name": "S Saliou Samb", "count": 1}, {"name": "S Habib Diouf", "count": 3}, {"name": "S Souhaibu Ngom", "count": 7}];
@@ -218,7 +218,7 @@ function render(){
 
   $('peopleList').innerHTML = arr.map(p => `<div class="person"><span class="n">${p.n}.</span><span class="name">${esc(p.name)}</span><span class="count">${p.count}</span></div>`).join('') || '<small>Aucune personne sélectionnée.</small>';
 
-  const lines = arr.map(p => `${p.n}. ${p.name} — ${p.count}`);
+  const lines = arr.map(p => `🟢 ${p.n}. ${p.name} ➡️ 📗 ${p.count}`);
   const hDay = $('hijriDay').value.trim(), hMonth = $('hijriMonth').value.trim(), hYear = $('hijriYear').value.trim();
   const wolofDate = (hDay && hMonth && hYear) ? `Àjjuma ${hDay} ${hMonth} ${hYear}h` : 'Àjjuma';
   const dateTxt = formatDate($('date').value);
@@ -233,18 +233,18 @@ function render(){
 
 ${lines.join('\n')}
 
-📊 *TOTAL : ${reads} lectures*
-👥 *${arr.length} participants*`;
+✅ 📗 *TOTAL : ${reads} lectures*
+✅ 🟢 *${arr.length} participants*`;
 
   $('completionPreview').textContent =
 `📖 *JAAYANTÉ Duruss JAALIBATUL MARĀQIB*
 🗓️ *${dateTxt}*
 🗓️ *${wolofDate}*
-Liim bi tollu na ci: *${reads}*
+✅ 📗 Liim bi tollu na ci: *${reads}*
 
 Def nañ ko hadiya Borom Touba. Di ñaanal sëriñ Muntakha Mbacké mu yaagg fi lool té and ak were.
 
-Jaangeenjëfëti🙏`;
+💚 Jaangeenjëfëti 🙏`;
 
   store.set('jaalibat_selection', $('selection').value);
 }
@@ -345,7 +345,15 @@ $('selection').value = store.get('jaalibat_selection', '');
 setDate(upcomingFriday()); // toujours le vendredi en cours à l'ouverture
 renderManage();
 
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(() => {}); }
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+    .then(reg => reg.update()).catch(() => {});
+  // Quand une nouvelle version prend le relais, on recharge une fois pour l'afficher
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(reloaded) return; reloaded = true; location.reload();
+  });
+}
 </script>
 </body>
 </html>
