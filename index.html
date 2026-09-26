@@ -33,6 +33,13 @@ button{border:0;border-radius:12px;padding:13px 15px;font-weight:700;font-size:1
 .mrow{display:grid;grid-template-columns:28px 1fr 64px 40px;gap:6px;margin:6px 0;align-items:center}.mrow span{color:var(--muted);font-size:13px}.mrow button{padding:10px 0}
 small{color:var(--muted)}details summary{cursor:pointer;font-weight:700}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
 h3{font-size:14px;margin:18px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:6px}
+.cell{padding:11px 0;border-radius:10px;background:#eef2f0;color:var(--text);font-size:16px;border:2px solid transparent;transition:background .12s}
+.cell.on{background:var(--green2);color:#fff}.grid.locked .cell{opacity:.55;cursor:default}
+button:disabled{opacity:.45;cursor:default}
+.tbl{overflow-x:auto;margin-top:8px}.tbl table{border-collapse:collapse;width:100%;font-size:13px}.tbl th,.tbl td{padding:7px 6px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}.tbl th{color:var(--muted);font-weight:600}.tbl td.r,.tbl th.r{text-align:right}
+.up{color:var(--green2)}.down{color:#a12b2b}
+@media(prefers-color-scheme:dark){.cell{background:#222b25}.cell.on{background:#198754}.tbl th,.tbl td{border-color:#303a34}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.chip{padding:6px 10px;font-size:13px;font-weight:600;background:#e2f3e9;color:var(--green);border-radius:999px}.chip.reset{background:transparent;color:var(--muted);border:1px solid var(--border)}
 @media(prefers-color-scheme:dark){.chip{background:#1e2c24;color:#9fdcbc}.chip.reset{color:#9eaaa3;border-color:#303a34}}
 @media(prefers-color-scheme:dark){body{background:#101512;color:#eef5f1}.card,input,textarea{background:#171d19;color:#eef5f1;border-color:#303a34}.preview{background:#121815;border-color:#303a34}.stat{background:#17241c}.secondary{background:#1e2c24;color:#9fdcbc}.danger{background:#2a1717;color:#f0a0a0}.person{border-color:#26302a}.hint,small,.person .n,.footer,.mrow span{color:#9eaaa3}.warn{color:#e0b050}}
@@ -64,18 +71,27 @@ h3{font-size:14px;margin:18px 0 6px}
 </section>
 
 <section class="card">
-  <label for="selection">🔢 Numéros à sélectionner</label>
-  <input id="selection" type="text" placeholder="Ex. 1-10, 15, 22-25, 30" autocomplete="off" inputmode="numeric">
-  <p class="hint">Numéros seuls, plages, ou les deux mélangés.</p>
-  <p class="warn" id="selWarn" hidden></p>
+  <label>✅ Qui a lu ce vendredi ?</label>
+  <p class="hint" style="margin:-4px 0 10px">Touche un numéro pour le passer en vert, touche-le encore pour l’enlever. Tout est enregistré à chaque toucher.</p>
+  <div id="grid" class="grid"></div>
+  <p class="hint" id="lastTap" style="min-height:1.3em"></p>
+  <p class="warn" id="closedNote" hidden>🔒 Ce vendredi est clôturé. Touche « Rouvrir » pour le modifier.</p>
   <div class="row">
-    <button class="secondary small" id="selAll">Tout sélectionner</button>
-    <button class="secondary small" id="selClear">Effacer</button>
+    <button class="secondary small" id="undo" disabled>↶ Annuler</button>
+    <button class="secondary small" id="selAll">Tout</button>
+    <button class="danger small" id="selClear">Effacer</button>
   </div>
+  <details style="margin-top:12px">
+    <summary style="font-size:14px">⌨️ Saisir au clavier</summary>
+    <input id="selection" type="text" placeholder="Ex. 1-10, 15, 22-25, 30" autocomplete="off" inputmode="numeric" style="margin-top:8px">
+    <p class="hint">Numéros seuls, plages, ou les deux mélangés. La grille se met à jour en même temps.</p>
+  </details>
+  <p class="warn" id="selWarn" hidden></p>
   <div class="stats">
-    <div class="stat"><b id="nbPeople">0</b><span>participants</span></div>
+    <div class="stat"><b id="nbPeople">0</b><span>lecteurs</span></div>
     <div class="stat"><b id="nbReads">0</b><span>lectures</span></div>
   </div>
+  <button class="primary" id="closeWeek">🔒 Clôturer ce vendredi</button>
 </section>
 
 <section class="card">
@@ -115,6 +131,15 @@ h3{font-size:14px;margin:18px 0 6px}
 
 <section class="card">
   <details>
+    <summary>📊 Statistiques</summary>
+    <div id="statsBody"></div>
+    <button class="primary" id="exportCsv">📊 Exporter les statistiques (Excel)</button>
+    <p class="hint">Fichier CSV : s’ouvre dans Excel, Numbers ou Google Sheets. Une ligne par personne, une colonne par vendredi.</p>
+  </details>
+</section>
+
+<section class="card">
+  <details>
     <summary>✏️ Personnaliser les messages</summary>
     <p class="hint">Modifie librement les textes. Les mots entre accolades, comme <b>{date}</b> ou <b>{liste}</b>, sont remplacés automatiquement : touche un bouton vert pour en insérer un. Tout est enregistré automatiquement.</p>
     <div id="tplEditor"></div>
@@ -129,7 +154,7 @@ h3{font-size:14px;margin:18px 0 6px}
     <button class="primary" id="addPerson">➕ Ajouter un participant</button>
 
     <h3>Sauvegarde</h3>
-    <p class="hint">Exporte la liste pour la garder en sécurité ou la transférer sur un autre téléphone.</p>
+    <p class="hint">Sauvegarde complète : participants, historique des vendredis et messages personnalisés. Fais-en une de temps en temps pour ne rien perdre si tu changes de téléphone.</p>
     <div class="row">
       <button class="secondary small" id="exportBtn">⬇️ Exporter</button>
       <button class="secondary small" id="importBtn">⬆️ Importer</button>
@@ -148,7 +173,7 @@ h3{font-size:14px;margin:18px 0 6px}
   </details>
 </section>
 
-<p class="footer">V3 • Les données restent sur ton appareil</p>
+<p class="footer">V4 • Les données restent sur ton appareil</p>
 </main>
 <script>
 const DEFAULT_PEOPLE = [{"name": "Serigne Abdou Samad Mbacké Ibn Serigne Sonhibou", "count": 1}, {"name": "S Doudou Gueye", "count": 3}, {"name": "S Moussa Camara", "count": 1}, {"name": "Diabel Ba", "count": 7}, {"name": "S Modou Kara Fall", "count": 2}, {"name": "S Cheikh Dieng", "count": 94}, {"name": "S Moussa Gning", "count": 3}, {"name": "S Fallou Mbacké", "count": 10}, {"name": "S Moustapha Lo", "count": 28}, {"name": "S Abdoulahi Diallo", "count": 7}, {"name": "S Ahmadou Moctar", "count": 2}, {"name": "S Moyhamed Niang", "count": 1}, {"name": "S Ousmane Gueye", "count": 1}, {"name": "S Moustapha Fall", "count": 3}, {"name": "S Doudou Thiam", "count": 3}, {"name": "S Mor Dieng", "count": 3}, {"name": "Baye Medoune Sarr", "count": 14}, {"name": "Baye Tomb Déll", "count": 1}, {"name": "Sokhna Mai Sylla", "count": 7}, {"name": "S Oumar Barro", "count": 1}, {"name": "S Ibrahima Faye", "count": 1}, {"name": "S Khadim Sarr", "count": 7}, {"name": "S Abdou Karim Ndiaye", "count": 1}, {"name": "S Cheikh Dame Seck", "count": 22}, {"name": "S Alioune Badara Sene", "count": 5}, {"name": "S Cheikh Gueye", "count": 3}, {"name": "S Mor Ndiaye", "count": 1}, {"name": "S Saliou Lo", "count": 2}, {"name": "S Omar Amar", "count": 2}, {"name": "Nuuru Wade", "count": 2}, {"name": "S Aliou Thiam", "count": 2}, {"name": "S Moustapha Sanosi", "count": 3}, {"name": "S Same Diop", "count": 2}, {"name": "S Dame Diop", "count": 7}, {"name": "S Ahmadoul Seck", "count": 3}, {"name": "Lamine Ndiour", "count": 4}, {"name": "Lamine Diop", "count": 7}, {"name": "S Maguette Fall", "count": 1}, {"name": "Serigne Diayante Diouf", "count": 7}, {"name": "Sokhna Oumou Sow", "count": 2}, {"name": "S Ndiaga Dieng", "count": 7}, {"name": "S Mourad Kebe", "count": 18}, {"name": "S Mouhamed Seck", "count": 2}, {"name": "Sokhna Amy Toure", "count": 2}, {"name": "S Abdou Diaw", "count": 5}, {"name": "S Aliou Gueye", "count": 1}, {"name": "S Moustapha Dienne", "count": 2}, {"name": "S Yalla Ndiaye", "count": 3}, {"name": "Ngagne Niang", "count": 3}, {"name": "S Abdoulaye Ndiaye", "count": 1}, {"name": "S Saliou Samb", "count": 1}, {"name": "S Habib Diouf", "count": 3}, {"name": "S Souhaibu Ngom", "count": 7}];
@@ -201,7 +226,43 @@ function updateDateHint(){
   const isFri = fromISO(v).getDay() === 5;
   $('dateHint').textContent = isFri ? '' : '⚠️ Cette date n’est pas un vendredi.';
 }
-function setDate(iso){ $('date').value = iso; fillHijri(); updateDateHint(); render(); }
+function setDate(iso){
+  $('date').value = iso;
+  const r = history[iso];
+  lastSel = r ? compress(r.nums) : ''; $('selection').value = lastSel;
+  undoStack = []; $('lastTap').textContent = '';
+  fillHijri(); updateDateHint(); render();
+}
+
+/* ---------- Historique des vendredis ---------- */
+let history = {};
+try{ history = JSON.parse(store.get('jaalibat_history', '{}')) || {}; }catch{ history = {}; }
+const saveHistory = () => store.set('jaalibat_history', JSON.stringify(history));
+const curRec = () => history[$('date').value];
+const isClosed = () => !!(curRec() && curRec().closed);
+function compress(nums){
+  const a = [...new Set(nums)].sort((x,y) => x-y), out = [];
+  for(let i = 0; i < a.length; i++){
+    let j = i; while(j+1 < a.length && a[j+1] === a[j]+1) j++;
+    out.push(j - i >= 2 ? `${a[i]}-${a[j]}` : j > i ? `${a[i]}, ${a[j]}` : `${a[i]}`); i = j;
+  }
+  return out.join(', ');
+}
+function persist(){
+  const d = $('date').value; if(!d) return;
+  const r = history[d];
+  if(r && r.closed) return; // semaine figée
+  const nums = parseSelection($('selection').value).nums;
+  if(!nums.length){ if(r){ delete history[d]; saveHistory(); } return; }
+  history[d] = { nums, size: people.length, read: nums.map(n => ({ name: people[n-1].name, count: Number(people[n-1].count) || 0 })) };
+  saveHistory();
+}
+let undoStack = [], lastSel = '', lastPush = 0;
+function commit(txt, push){
+  if(isClosed()) return;
+  if(push && txt !== lastSel){ undoStack.push(lastSel); if(undoStack.length > 200) undoStack.shift(); }
+  lastSel = txt; $('selection').value = txt; render();
+}
 
 /* ---------- Sélection ---------- */
 function parseSelection(s){
@@ -290,6 +351,75 @@ $('tplEditor').addEventListener('click', e => {
   }
 });
 
+function renderGrid(sel){
+  const g = $('grid'), locked = isClosed();
+  if(g.children.length !== people.length){
+    g.innerHTML = people.map((p,i) => `<button class="cell" data-cell="${i+1}">${i+1}</button>`).join('');
+  }
+  [...g.children].forEach((c,i) => { c.classList.toggle('on', sel.has(i+1)); c.title = people[i].name; c.setAttribute('aria-pressed', sel.has(i+1)); c.setAttribute('aria-label', `${i+1}. ${people[i].name}`); });
+  g.classList.toggle('locked', locked);
+  $('closedNote').hidden = !locked;
+  $('selection').disabled = $('selAll').disabled = $('selClear').disabled = locked;
+  $('undo').disabled = locked || !undoStack.length;
+  $('closeWeek').textContent = locked ? '🔓 Rouvrir ce vendredi' : '🔒 Clôturer ce vendredi';
+}
+$('grid').addEventListener('click', e => {
+  const n = +e.target.dataset.cell; if(!n || isClosed()) return;
+  const set = new Set(parseSelection($('selection').value).nums);
+  const on = !set.has(n); on ? set.add(n) : set.delete(n);
+  $('lastTap').textContent = `${on ? '🟢' : '⚪'} ${n}. ${people[n-1].name} — ${people[n-1].count}`;
+  commit(compress([...set]), true);
+});
+
+/* ---------- Statistiques ---------- */
+const shortDate = iso => fromISO(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'2-digit' });
+function computeStats(){
+  const weeks = Object.keys(history).filter(d => history[d].nums && history[d].nums.length).sort();
+  const wk = weeks.map(d => { const r = history[d]; const reads = r.read.reduce((s,x) => s + x.count, 0);
+    return { d, readers: r.read.length, size: r.size || people.length, reads, names: new Set(r.read.map(x => x.name)), map: new Map(r.read.map(x => [x.name, x.count])) }; });
+  const persons = people.map((p,i) => {
+    let times = 0, total = 0, last = null, streak = 0, absent = 0, streakDone = false, absDone = false;
+    for(let k = wk.length - 1; k >= 0; k--){
+      const has = wk[k].names.has(p.name);
+      if(has){ times++; total += wk[k].map.get(p.name); if(!last) last = wk[k].d; }
+      if(!streakDone){ if(has) streak++; else streakDone = true; }
+      if(!absDone){ if(!has) absent++; else absDone = true; }
+    }
+    return { n: i+1, name: p.name, times, total, last, streak, absent };
+  });
+  return { wk, persons };
+}
+function renderStats(){
+  const box = $('statsBody'); if(!box) return;
+  const { wk, persons } = computeStats();
+  if(!wk.length){ box.innerHTML = '<p class="hint">Pas encore de données. Les statistiques apparaîtront dès que des lecteurs seront cochés pour un vendredi.</p>'; return; }
+  const totalReads = wk.reduce((s,w) => s + w.reads, 0);
+  const avgReaders = (wk.reduce((s,w) => s + w.readers, 0) / wk.length).toFixed(1).replace('.', ',');
+  const avgRate = Math.round(wk.reduce((s,w) => s + w.readers / w.size, 0) / wk.length * 100);
+  const relance = persons.filter(p => p.absent >= 2 && wk.length >= 2).sort((a,b) => b.absent - a.absent);
+  const rows = wk.slice().reverse().slice(0, 12).map((w, i, arr) => {
+    const prev = arr[i+1]; const diff = prev ? w.reads - prev.reads : 0;
+    const arrow = !prev || !diff ? '' : diff > 0 ? `<span class="up"> ▲${diff}</span>` : `<span class="down"> ▼${-diff}</span>`;
+    return `<tr><td>${shortDate(w.d)}${history[w.d].closed ? ' 🔒' : ''}</td><td class="r">${w.readers}/${w.size}</td><td class="r">${Math.round(w.readers / w.size * 100)} %</td><td class="r">${w.reads}${arrow}</td></tr>`;
+  }).join('');
+  const prow = persons.slice().sort((a,b) => b.times - a.times || b.total - a.total).map(p =>
+    `<tr><td>${p.n}. ${esc(p.name)}</td><td class="r">${p.times}/${wk.length}</td><td class="r">${p.total}</td><td class="r">${p.streak ? p.streak + ' 🔥' : '–'}</td><td>${p.last ? shortDate(p.last) : 'jamais'}</td></tr>`).join('');
+  box.innerHTML = `
+    <div class="stats">
+      <div class="stat"><b>${wk.length}</b><span>vendredis suivis</span></div>
+      <div class="stat"><b>${totalReads}</b><span>lectures au total</span></div>
+      <div class="stat"><b>${avgReaders}</b><span>lecteurs en moyenne</span></div>
+      <div class="stat"><b>${avgRate} %</b><span>participation moyenne</span></div>
+    </div>
+    <h3>📣 À relancer (${relance.length})</h3>
+    ${relance.length ? `<p class="hint" style="margin-top:0">N’ont pas lu depuis 2 vendredis ou plus.</p><div class="tbl"><table>${relance.map(p => `<tr><td>${p.n}. ${esc(p.name)}</td><td class="r">${p.absent} vendredi${p.absent > 1 ? 's' : ''}</td></tr>`).join('')}</table></div>` : '<p class="hint" style="margin-top:0">Personne, bravo au groupe 💚</p>'}
+    <h3>🗓️ Par vendredi</h3>
+    <div class="tbl"><table><tr><th>Date</th><th class="r">Lecteurs</th><th class="r">Taux</th><th class="r">Lectures</th></tr>${rows}</table></div>
+    <h3>👥 Par personne</h3>
+    <div class="tbl"><table><tr><th>Nom</th><th class="r">Vendredis</th><th class="r">Lectures</th><th class="r">Série</th><th>Dernière</th></tr>${prow}</table></div>
+    <p class="hint">La série 🔥 compte les vendredis consécutifs lus jusqu’au plus récent.</p>`;
+}
+
 function render(){
   const { list: arr, bad, out } = selected();
   const reads = arr.reduce((s,p) => s + Number(p.count || 0), 0);
@@ -324,7 +454,9 @@ function render(){
   $('pendingPreview').textContent = rest.length ? fill(tpl('pending'), vars) : '🎉 Tout le monde a lu, Alhamdoulillah !';
   $('nbPending').textContent = rest.length;
 
-  store.set('jaalibat_selection', $('selection').value);
+  persist();
+  renderGrid(new Set(arr.map(p => p.n)));
+  renderStats();
 }
 
 /* ---------- Copier / partager ---------- */
@@ -388,40 +520,75 @@ $('resetPeople').onclick = () => {
   if(!confirm(`Revenir à la liste d’origine (${DEFAULT_PEOPLE.length} participants) ? Tes modifications seront perdues.`)) return;
   people = clone(DEFAULT_PEOPLE); store.del('jaalibat_people'); renderManage(); render();
 };
-$('exportBtn').onclick = async () => {
-  const json = JSON.stringify(people, null, 1);
-  const file = new File([json], `jaalibat-participants-${toISO(new Date())}.json`, { type: 'application/json' });
+async function saveFile(file){
   if(navigator.canShare && navigator.canShare({ files: [file] })){
-    try{ await navigator.share({ files: [file], title: 'Sauvegarde Jaalibatul' }); return; }catch(e){ if(e.name === 'AbortError') return; }
+    try{ await navigator.share({ files: [file], title: file.name }); return; }catch(e){ if(e.name === 'AbortError') return; }
   }
   const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('exportBtn').onclick = () => {
+  const templates = {}; Object.keys(TEMPLATES).forEach(k => { const v = store.get('jaalibat_tpl_' + k, null); if(v !== null) templates[k] = v; });
+  const data = { app: 'jaalibat', version: 3, people, history, templates, hijriOffset: store.get('jaalibat_hijri_offset', '0') };
+  saveFile(new File([JSON.stringify(data)], `jaalibat-sauvegarde-${toISO(new Date())}.json`, { type: 'application/json' }));
+};
+$('exportCsv').onclick = () => {
+  const { wk, persons } = computeStats();
+  if(!wk.length){ alert('Aucune donnée à exporter pour l’instant.'); return; }
+  const q = v => { v = String(v); return /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; };
+  const fr = iso => fromISO(iso).toLocaleDateString('fr-FR');
+  const lines = [['N°','Nom','Lectures prévues', ...wk.map(w => fr(w.d)), 'Vendredis lus', 'Total lectures', 'Taux de présence'].map(q).join(';')];
+  persons.forEach(p => lines.push([p.n, p.name, people[p.n-1].count, ...wk.map(w => w.map.has(p.name) ? w.map.get(p.name) : ''), p.times, p.total, Math.round(p.times / wk.length * 100) + ' %'].map(q).join(';')));
+  lines.push(['', 'TOTAL LECTURES', '', ...wk.map(w => w.reads), '', wk.reduce((s,w) => s + w.reads, 0), ''].map(q).join(';'));
+  lines.push(['', 'NOMBRE DE LECTEURS', '', ...wk.map(w => w.readers), '', '', ''].map(q).join(';'));
+  lines.push(['', 'TAUX DE PARTICIPATION', '', ...wk.map(w => Math.round(w.readers / w.size * 100) + ' %'), '', '', ''].map(q).join(';'));
+  saveFile(new File(['\ufeff' + lines.join('\r\n')], `jaalibat-statistiques-${toISO(new Date())}.csv`, { type: 'text/csv' }));
 };
 $('importBtn').onclick = () => $('importFile').click();
 $('importFile').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if(!f) return;
   try{
-    const data = JSON.parse(await f.text());
-    if(!Array.isArray(data) || !data.every(p => p && typeof p.name === 'string')) throw 0;
-    if(!confirm(`Remplacer la liste actuelle par ${data.length} participants ?`)) return;
-    people = data.map(p => ({ name: p.name.trim(), count: Math.max(0, parseInt(p.count) || 0) }));
-    savePeople(); renderManage(); render(); alert('Liste importée.');
+    let data = JSON.parse(await f.text());
+    if(Array.isArray(data)) data = { people: data };
+    const list = data.people;
+    if(!Array.isArray(list) || !list.every(p => p && typeof p.name === 'string')) throw 0;
+    const nbW = data.history ? Object.keys(data.history).length : 0;
+    if(!confirm(`Remplacer les données actuelles par ${list.length} participants${nbW ? ` et ${nbW} vendredis d’historique` : ''} ?`)) return;
+    people = list.map(p => ({ name: p.name.trim(), count: Math.max(0, parseInt(p.count) || 0) }));
+    savePeople();
+    if(data.history && typeof data.history === 'object'){ history = data.history; saveHistory(); }
+    if(data.templates) Object.entries(data.templates).forEach(([k,v]) => { if(TEMPLATES[k]) store.set('jaalibat_tpl_' + k, v); });
+    if(data.hijriOffset !== undefined){ store.set('jaalibat_hijri_offset', data.hijriOffset); $('hijriOffset').value = data.hijriOffset; }
+    renderManage(); renderTemplates(); setDate($('date').value); alert('Sauvegarde importée.');
   }catch{ alert('Fichier invalide : ce n’est pas une sauvegarde Jaalibatul.'); }
 };
 $('hijriOffset').value = store.get('jaalibat_hijri_offset', '0');
 $('hijriOffset').addEventListener('input', () => { store.set('jaalibat_hijri_offset', $('hijriOffset').value || '0'); fillHijri(); render(); });
 
 /* ---------- Événements ---------- */
-$('date').addEventListener('change', () => { fillHijri(); updateDateHint(); render(); });
+$('date').addEventListener('change', () => { if($('date').value) setDate($('date').value); });
 $('prevWeek').onclick = () => setDate(shiftDays($('date').value || upcomingFriday(), -7));
 $('nextWeek').onclick = () => setDate(shiftDays($('date').value || upcomingFriday(), 7));
-['selection','hijriDay','hijriMonth','hijriYear'].forEach(id => $(id).addEventListener('input', render));
-$('selAll').onclick = () => { $('selection').value = people.length ? `1-${people.length}` : ''; render(); };
-$('selClear').onclick = () => { $('selection').value = ''; render(); $('selection').focus(); };
+['hijriDay','hijriMonth','hijriYear'].forEach(id => $(id).addEventListener('input', render));
+$('selection').addEventListener('input', () => { const now = Date.now(); commit($('selection').value, now - lastPush > 1500); lastPush = now; });
+$('undo').onclick = () => { if(!undoStack.length || isClosed()) return; lastSel = undoStack.pop(); $('selection').value = lastSel; $('lastTap').textContent = '↶ Dernière action annulée'; render(); };
+$('closeWeek').onclick = () => {
+  const d = $('date').value, r = history[d];
+  if(r && r.closed){ r.closed = false; saveHistory(); render(); return; }
+  if(!r){ alert('Coche d’abord les personnes qui ont lu ce vendredi.'); return; }
+  if(!confirm(`Clôturer le ${formatDate(d)} avec ${r.read.length} lecteurs ? La sélection sera verrouillée (tu pourras la rouvrir).`)) return;
+  r.closed = true; saveHistory(); undoStack = []; render();
+};
+$('selAll').onclick = () => commit(people.length ? `1-${people.length}` : '', true);
+$('selClear').onclick = () => { if(!$('selection').value || !confirm('Effacer toute la sélection de ce vendredi ? (Tu pourras annuler avec ↶)')) return; commit('', true); $('lastTap').textContent = ''; };
 
 /* ---------- Démarrage ---------- */
 $('months').innerHTML = WOLOF_MONTHS.map(m => `<option value="${esc(m)}">`).join('');
-$('selection').value = store.get('jaalibat_selection', '');
+{ // reprise de l'ancienne saisie (versions précédentes)
+  const old = store.get('jaalibat_selection', ''), f = upcomingFriday();
+  if(old && !history[f]){ $('date').value = f; $('selection').value = old; persist(); }
+  store.del('jaalibat_selection');
+}
 setDate(upcomingFriday()); // toujours le vendredi en cours à l'ouverture
 renderTemplates();
 renderManage();
