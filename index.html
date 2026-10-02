@@ -10,11 +10,17 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script>
+(function(){var t='auto';try{t=localStorage.getItem('jaalibat_theme')||'auto'}catch(e){}
+var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
+document.documentElement.dataset.theme=d?'dark':'light';document.documentElement.dataset.pref=t;})();
+</script>
 <title>Jaalibatul Marāqib</title>
 <style>
 :root{--green:#0f5132;--green2:#198754;--bg:#f5f7f6;--card:#fff;--text:#18221d;--muted:#6b756f;--border:#dce4df;--warn:#8a5a00}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{background:var(--green);color:#fff;padding:calc(24px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 22px 22px}
+.themeBtn{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;background:#ffffff26;color:#fff;padding:8px 12px;font-size:14px;border-radius:999px}
+header{position:relative;background:var(--green);color:#fff;padding:calc(24px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 22px 22px}
 h1{font-size:23px;margin:0 0 5px}header p{margin:0;opacity:.9;font-size:14px}
 main{max-width:720px;margin:auto;padding:16px 14px calc(40px + env(safe-area-inset-bottom))}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #00000008}
@@ -39,14 +45,15 @@ h3{font-size:14px;margin:18px 0 6px}
 button:disabled{opacity:.45;cursor:default}
 .tbl{overflow-x:auto;margin-top:8px}.tbl table{border-collapse:collapse;width:100%;font-size:13px}.tbl th,.tbl td{padding:7px 6px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}.tbl th{color:var(--muted);font-weight:600}.tbl td.r,.tbl th.r{text-align:right}
 .up{color:var(--green2)}.down{color:#a12b2b}
-@media(prefers-color-scheme:dark){.cell{background:#222b25}.cell.on{background:#198754}.tbl th,.tbl td{border-color:#303a34}}
+html[data-theme="dark"] .cell{background:#222b25}html[data-theme="dark"] .cell.on{background:#198754}html[data-theme="dark"] .tbl th,html[data-theme="dark"] .tbl td{border-color:#303a34}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.chip{padding:6px 10px;font-size:13px;font-weight:600;background:#e2f3e9;color:var(--green);border-radius:999px}.chip.reset{background:transparent;color:var(--muted);border:1px solid var(--border)}
-@media(prefers-color-scheme:dark){.chip{background:#1e2c24;color:#9fdcbc}.chip.reset{color:#9eaaa3;border-color:#303a34}}
-@media(prefers-color-scheme:dark){body{background:#101512;color:#eef5f1}.card,input,textarea{background:#171d19;color:#eef5f1;border-color:#303a34}.preview{background:#121815;border-color:#303a34}.stat{background:#17241c}.secondary{background:#1e2c24;color:#9fdcbc}.danger{background:#2a1717;color:#f0a0a0}.person{border-color:#26302a}.hint,small,.person .n,.footer,.mrow span{color:#9eaaa3}.warn{color:#e0b050}}
+html[data-theme="dark"] .chip{background:#1e2c24;color:#9fdcbc}html[data-theme="dark"] .chip.reset{color:#9eaaa3;border-color:#303a34}
+html[data-theme="dark"] header{background:#0b2a1d}html[data-theme="dark"] body{background:#101512;color:#eef5f1}html[data-theme="dark"] .card,html[data-theme="dark"] input,html[data-theme="dark"] textarea{background:#171d19;color:#eef5f1;border-color:#303a34}html[data-theme="dark"] .preview{background:#121815;border-color:#303a34}html[data-theme="dark"] .stat{background:#17241c}html[data-theme="dark"] .secondary{background:#1e2c24;color:#9fdcbc}html[data-theme="dark"] .danger{background:#2a1717;color:#f0a0a0}html[data-theme="dark"] .person{border-color:#26302a}html[data-theme="dark"] .hint,html[data-theme="dark"] small,html[data-theme="dark"] .person .n,html[data-theme="dark"] .footer,html[data-theme="dark"] .mrow span{color:#9eaaa3}html[data-theme="dark"] .warn{color:#e0b050}
 </style>
 </head>
 <body>
 <header>
+  <button class="themeBtn" id="themeBtn" aria-label="Changer le thème"></button>
   <h1>🕌 Jaalibatul Marāqib</h1>
   <p>Gestion simple des lectures du vendredi</p>
 </header>
@@ -121,6 +128,16 @@ button:disabled{opacity:.45;cursor:default}
 </section>
 
 <section class="card">
+  <label>👥 Tout le monde (lu et pas lu)</label>
+  <p class="hint" style="margin:-4px 0 8px">Toute la liste dans l’ordre, avec 🟢 pour ceux qui ont lu et ⚪ pour les autres.</p>
+  <div id="allPreview" class="preview"></div>
+  <div class="row">
+    <button class="secondary" id="copyAll">📋 Copier</button>
+    <button class="secondary" id="shareAll">↗️ Partager</button>
+  </div>
+</section>
+
+<section class="card">
   <label>📖 Message de fin de lecture</label>
   <div id="completionPreview" class="preview"></div>
   <div class="row">
@@ -173,7 +190,7 @@ button:disabled{opacity:.45;cursor:default}
   </details>
 </section>
 
-<p class="footer">V4 • Les données restent sur ton appareil</p>
+<p class="footer">V4.2 • Les données restent sur ton appareil</p>
 </main>
 <script>
 const DEFAULT_PEOPLE = [{"name": "Serigne Abdou Samad Mbacké Ibn Serigne Sonhibou", "count": 1}, {"name": "S Doudou Gueye", "count": 3}, {"name": "S Moussa Camara", "count": 1}, {"name": "Diabel Ba", "count": 7}, {"name": "S Modou Kara Fall", "count": 2}, {"name": "S Cheikh Dieng", "count": 94}, {"name": "S Moussa Gning", "count": 3}, {"name": "S Fallou Mbacké", "count": 10}, {"name": "S Moustapha Lo", "count": 28}, {"name": "S Abdoulahi Diallo", "count": 7}, {"name": "S Ahmadou Moctar", "count": 2}, {"name": "S Moyhamed Niang", "count": 1}, {"name": "S Ousmane Gueye", "count": 1}, {"name": "S Moustapha Fall", "count": 3}, {"name": "S Doudou Thiam", "count": 3}, {"name": "S Mor Dieng", "count": 3}, {"name": "Baye Medoune Sarr", "count": 14}, {"name": "Baye Tomb Déll", "count": 1}, {"name": "Sokhna Mai Sylla", "count": 7}, {"name": "S Oumar Barro", "count": 1}, {"name": "S Ibrahima Faye", "count": 1}, {"name": "S Khadim Sarr", "count": 7}, {"name": "S Abdou Karim Ndiaye", "count": 1}, {"name": "S Cheikh Dame Seck", "count": 22}, {"name": "S Alioune Badara Sene", "count": 5}, {"name": "S Cheikh Gueye", "count": 3}, {"name": "S Mor Ndiaye", "count": 1}, {"name": "S Saliou Lo", "count": 2}, {"name": "S Omar Amar", "count": 2}, {"name": "Nuuru Wade", "count": 2}, {"name": "S Aliou Thiam", "count": 2}, {"name": "S Moustapha Sanosi", "count": 3}, {"name": "S Same Diop", "count": 2}, {"name": "S Dame Diop", "count": 7}, {"name": "S Ahmadoul Seck", "count": 3}, {"name": "Lamine Ndiour", "count": 4}, {"name": "Lamine Diop", "count": 7}, {"name": "S Maguette Fall", "count": 1}, {"name": "Serigne Diayante Diouf", "count": 7}, {"name": "Sokhna Oumou Sow", "count": 2}, {"name": "S Ndiaga Dieng", "count": 7}, {"name": "S Mourad Kebe", "count": 18}, {"name": "S Mouhamed Seck", "count": 2}, {"name": "Sokhna Amy Toure", "count": 2}, {"name": "S Abdou Diaw", "count": 5}, {"name": "S Aliou Gueye", "count": 1}, {"name": "S Moustapha Dienne", "count": 2}, {"name": "S Yalla Ndiaye", "count": 3}, {"name": "Ngagne Niang", "count": 3}, {"name": "S Abdoulaye Ndiaye", "count": 1}, {"name": "S Saliou Samb", "count": 1}, {"name": "S Habib Diouf", "count": 3}, {"name": "S Souhaibu Ngom", "count": 7}];
@@ -318,9 +335,20 @@ Def nañ ko hadiya Borom Touba. Di ñaanal sëriñ Muntakha Mbacké mu yaagg fi 
 
 ⏳ *{restants} personnes restantes*
 📗 *{total_restants} lectures à faire*` },
+  all: { title: '👥 Message « tout le monde »', rows: 11, tags: ['date','date_wolof','liste_complete','participants','total','restants','total_restants','total_prevu'], def:
+`🕌 *BISMILLAH, BARKEP BOROM TOUBA*
+📖 *JAAYANTÉ Duruss JAALIBATUL MARĀQIB*
+🗓️ *{date}*
+🗓️ *{date_wolof}*
+
+{liste_complete}
+
+🟢 *Ont lu : {participants} ({total} lectures)*
+⚪ *Pas encore : {restants} ({total_restants} lectures)*
+📗 *Total prévu : {total_prevu} lectures*` },
   pendingLine: { title: 'Format d’une ligne « pas encore lu »', rows: 1, tags: ['n','nom','nb'], def: `{n}. {nom} — {nb} ⚪` }
 };
-const TAG_HELP = { date:'date du vendredi', date_wolof:'date islamique', liste:'la liste des lecteurs', total:'nombre total de lectures', participants:'nombre de lecteurs', n:'numéro', nom:'nom', nb:'nombre de lectures', liste_restants:'liste de ceux qui n’ont pas lu', restants:'nombre de personnes restantes', total_restants:'lectures restantes' };
+const TAG_HELP = { date:'date du vendredi', date_wolof:'date islamique', liste:'la liste des lecteurs', total:'nombre total de lectures', participants:'nombre de lecteurs', n:'numéro', nom:'nom', nb:'nombre de lectures', liste_restants:'liste de ceux qui n’ont pas lu', restants:'nombre de personnes restantes', total_restants:'lectures restantes', liste_complete:'tout le monde, lu et pas lu', total_prevu:'total des lectures de toute la liste' };
 const tpl = k => store.get('jaalibat_tpl_' + k, TEMPLATES[k].def);
 const fill = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m);
 
@@ -447,10 +475,13 @@ function render(){
     participants: arr.length,
     liste_restants: rest.map(p => line(tpl('pendingLine'), p)).join('\n'),
     restants: rest.length,
-    total_restants: restReads
+    total_restants: restReads,
+    total_prevu: reads + restReads,
+    liste_complete: people.map((p,i) => line(selSet.has(i+1) ? tpl('line') : tpl('pendingLine'), { n: i+1, ...p })).join('\n')
   };
   $('preview').textContent = fill(tpl('list'), vars);
   $('completionPreview').textContent = fill(tpl('end'), vars);
+  $('allPreview').textContent = fill(tpl('all'), vars);
   $('pendingPreview').textContent = rest.length ? fill(tpl('pending'), vars) : '🎉 Tout le monde a lu, Alhamdoulillah !';
   $('nbPending').textContent = rest.length;
 
@@ -485,6 +516,8 @@ $('copyCompletion').onclick = async () => flash($('copyCompletion'), await copyT
 $('share').onclick = () => shareText($('preview').textContent, $('share'));
 $('copyPending').onclick = async () => flash($('copyPending'), await copyText($('pendingPreview').textContent) ? '✅ Copié !' : '⚠️ Échec');
 $('sharePending').onclick = () => shareText($('pendingPreview').textContent, $('sharePending'));
+$('copyAll').onclick = async () => flash($('copyAll'), await copyText($('allPreview').textContent) ? '✅ Copié !' : '⚠️ Échec');
+$('shareAll').onclick = () => shareText($('allPreview').textContent, $('shareAll'));
 $('shareCompletion').onclick = () => shareText($('completionPreview').textContent, $('shareCompletion'));
 
 /* ---------- Gestion des participants ---------- */
@@ -564,6 +597,23 @@ $('importFile').onchange = async e => {
 };
 $('hijriOffset').value = store.get('jaalibat_hijri_offset', '0');
 $('hijriOffset').addEventListener('input', () => { store.set('jaalibat_hijri_offset', $('hijriOffset').value || '0'); fillHijri(); render(); });
+
+/* ---------- Thème clair / sombre ---------- */
+const THEMES = { auto: '🌓 Auto', light: '☀️ Clair', dark: '🌙 Sombre' };
+const mq = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){
+  const pref = store.get('jaalibat_theme', 'auto');
+  const dark = pref === 'dark' || (pref === 'auto' && mq.matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#0b2a1d' : '#0f5132';
+  $('themeBtn').textContent = THEMES[pref];
+}
+$('themeBtn').onclick = () => {
+  const order = ['auto','light','dark'], pref = store.get('jaalibat_theme','auto');
+  store.set('jaalibat_theme', order[(order.indexOf(pref) + 1) % 3]); applyTheme();
+};
+mq.addEventListener ? mq.addEventListener('change', applyTheme) : mq.addListener(applyTheme);
+applyTheme();
 
 /* ---------- Événements ---------- */
 $('date').addEventListener('change', () => { if($('date').value) setDate($('date').value); });
